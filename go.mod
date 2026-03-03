@@ -1,4 +1,4 @@
-module helloworld
+module github.com/ray-dota/backend-mono
 
 go 1.22
 

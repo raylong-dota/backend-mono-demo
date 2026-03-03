@@ -1,7 +1,7 @@
 package data
 
 import (
-	"helloworld/app/helloworld/service/internal/conf"
+	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"

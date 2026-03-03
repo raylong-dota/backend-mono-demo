@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	v1 "helloworld/api/helloworld/service/v1"
-	"helloworld/app/helloworld/service/internal/biz"
+	v1 "github.com/ray-dota/backend-mono/api/helloworld/service/v1"
+	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/biz"
 )
 
 // GreeterService is a greeter service.
