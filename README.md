@@ -103,27 +103,33 @@ make build svc=order   # → bin/orbit-order-svc
 
 | 命令 | 说明 |
 |---|---|
-| `make install` | 安装所有项目本地工具链（幂等） |
+| `make install` | 安装所有项目本地工具链（幂等，已装则跳过） |
 | `make new svcn=<name>` | 从 helloworld 模板创建新服务 |
-| `make generate svc=<name>\|all` | 生成代码（api + wire + proto） |
-| `make build svc=<name>\|all` | 编译二进制到 `bin/orbit-<svc>-svc` |
-| `make run svc=<name>` | 本地运行指定服务（不支持 `all`） |
-| `make lint` | 运行 golangci-lint 并自动修复（本地开发） |
-| `make lint-check` | 仅检查，不修复（CI / PR Gate 使用） |
+| `make generate svc=<name>\|all` | 对指定服务或所有服务生成代码（api + wire + proto） |
+| `make build svc=<name>\|all` | 编译指定服务或所有服务，产物为 `bin/orbit-<svc>-svc` |
+| `make run svc=<name>` | 本地运行指定服务（`svc` 必填，不支持 `all`） |
+| `make lint` | 全项目运行 golangci-lint 并自动修复（本地开发） |
+| `make lint-check` | 全项目运行 golangci-lint，仅检查不修复（CI 使用） |
 
-> `svc` 参数必填，`all` 表示对所有服务执行。
+> 所有带 `svc` 的命令均为必填参数。
 
 ### 服务目录（`app/<app>/<service>/`）
 
 | 命令 | 说明 |
 |---|---|
-| `make api` | 生成该服务的 gRPC + HTTP + Swagger 代码 |
-| `make wire` | 生成 Wire 依赖注入代码 |
+| `make api` | 生成 gRPC + HTTP + Swagger + errors 代码（等同于下面四项合集） |
+| `make grpc` | 生成 gRPC 代码 |
+| `make http` | 生成 HTTP 代码 |
+| `make errors` | 生成错误码代码 |
+| `make swagger` | 生成 Swagger 文档 |
 | `make proto` | 生成内部 proto struct |
-| `make build` | 编译二进制到服务本地 `bin/`（产物名由 `APP_NAME` 决定） |
+| `make wire` | 生成 Wire 依赖注入代码 |
+| `make generate` | 运行 `go generate ./...` |
+| `make build` | 编译二进制（默认产物在服务本地 `bin/<APP_NAME>`） |
 | `make run` | 本地运行服务 |
 | `make test` | 运行单元测试 |
 | `make ent` | 生成 ent ORM 代码 |
+| `make docker` | 构建 Docker 镜像 |
 
 ## CI / PR Gate
 
