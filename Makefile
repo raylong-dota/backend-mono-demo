@@ -13,6 +13,22 @@ install:
 new:
 	@bash scripts/new.sh $(svc)
 
+.PHONY: image
+# build docker image: make image svc=<name> [tag=<tag>]  (default tag: latest)
+image:
+	@if ! command -v docker >/dev/null 2>&1; then \
+		echo "error: docker not found, please install Docker first"; exit 1; \
+	elif [ -z "$(svc)" ]; then \
+		echo "error: svc is required, e.g. make image svc=order"; exit 1; \
+	elif [ ! -d "app/$(svc)/service" ]; then \
+		echo "error: app/$(svc)/service not found"; exit 1; \
+	else \
+		docker build \
+			--build-arg APP_SVC=$(svc) \
+			-t orbit-$(svc)-svc:$(if $(tag),$(tag),latest) \
+			.; \
+	fi
+
 .PHONY: clean
 # remove build artifacts
 clean:

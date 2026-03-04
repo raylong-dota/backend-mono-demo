@@ -123,6 +123,8 @@ make build svc=order   # → bin/orbit-order-svc
 | `make generate svc=<name>\|all` | 对指定服务或所有服务生成代码（api + wire + proto） |
 | `make build svc=<name>\|all` | 编译指定服务或所有服务，产物为 `bin/orbit-<svc>-svc` |
 | `make run svc=<name>` | 本地运行指定服务（`svc` 必填，不支持 `all`） |
+| `make image svc=<name>` | 构建指定服务的 Docker 镜像，默认 tag `latest` |
+| `make image svc=<name> tag=<tag>` | 构建并指定镜像 tag |
 | `make clean` | 删除所有编译产物（根目录及各服务的 `bin/`） |
 | `make tidy` | 运行 `go mod tidy`（使用项目本地 Go） |
 | `make get pkg=<module@version>` | 添加或升级依赖（使用项目本地 Go） |
