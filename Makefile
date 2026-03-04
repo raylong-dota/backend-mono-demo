@@ -13,9 +13,14 @@ new:
 	@bash scripts/new.sh $(svcn)
 
 .PHONY: lint
-# run golangci-lint across the entire project
+# run golangci-lint and auto-fix issues (local development)
 lint:
 	$(T) golangci-lint run --timeout 10m --fix --path-mode abs --config configs/golangci.yaml ./...
+
+.PHONY: lint-check
+# run golangci-lint in check-only mode, no auto-fix (used by CI)
+lint-check:
+	$(T) golangci-lint run --timeout 10m --path-mode abs --config configs/golangci.yaml ./...
 
 .PHONY: api
 # generate api
