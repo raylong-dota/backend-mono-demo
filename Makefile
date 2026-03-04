@@ -1,7 +1,7 @@
 ROOT  := $(shell pwd)
 GOBIN := $(ROOT)/.go/bin
 TOOLS := $(ROOT)/.tools
-T     := PATH="$(GOBIN):$(TOOLS):$$PATH" GOMODCACHE="$(ROOT)/.go/pkg/mod"
+T     := PATH="$(GOBIN):$(TOOLS)/go/bin:$(TOOLS):$$PATH" GOMODCACHE="$(ROOT)/.go/pkg/mod"
 
 .PHONY: install
 # install development tools to .tools/ (run once after cloning)
@@ -12,6 +12,22 @@ install:
 # create a new service: make new svc=<name>  (e.g. make new svc=order)
 new:
 	@bash scripts/new.sh $(svc)
+
+.PHONY: clean
+# remove build artifacts
+clean:
+	rm -rf $(ROOT)/bin
+	find app -mindepth 2 -maxdepth 2 -type d -exec test -d '{}/bin' \; -exec rm -rf '{}/bin' \;
+
+.PHONY: tidy
+# run go mod tidy with the project-local Go
+tidy:
+	$(T) go mod tidy
+
+.PHONY: get
+# add or upgrade a dependency: make get pkg=github.com/foo/bar@v1.2.3
+get:
+	$(T) go get $(pkg)
 
 .PHONY: lint
 # run golangci-lint and auto-fix issues (local development)

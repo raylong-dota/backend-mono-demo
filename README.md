@@ -57,8 +57,23 @@ backend-mono/
 git clone <repo-url>
 cd backend-mono
 
-make install   # 安装 protoc、protoc 插件、wire、golangci-lint 等（幂等，已装则跳过）
+make install   # 安装 Go 1.26.0、protoc、wire、golangci-lint 等（幂等，已装则跳过）
 ```
+
+**推荐安装 [direnv](https://direnv.net/)，然后执行：**
+
+```bash
+direnv allow
+```
+
+之后 `cd` 进项目目录，终端里的 `go`、`wire` 等命令自动使用项目本地版本（`.tools/go/bin`），无需手动切换。
+
+不使用 direnv 时，用 make 命令代替直接的 `go` 命令：
+
+| 直接命令 | 等价的 make 命令 |
+|---|---|
+| `go mod tidy` | `make tidy` |
+| `go get github.com/foo/bar@v1.2.3` | `make get pkg=github.com/foo/bar@v1.2.3` |
 
 ### 2. 运行模板服务（helloworld）
 
@@ -108,6 +123,9 @@ make build svc=order   # → bin/orbit-order-svc
 | `make generate svc=<name>\|all` | 对指定服务或所有服务生成代码（api + wire + proto） |
 | `make build svc=<name>\|all` | 编译指定服务或所有服务，产物为 `bin/orbit-<svc>-svc` |
 | `make run svc=<name>` | 本地运行指定服务（`svc` 必填，不支持 `all`） |
+| `make clean` | 删除所有编译产物（根目录及各服务的 `bin/`） |
+| `make tidy` | 运行 `go mod tidy`（使用项目本地 Go） |
+| `make get pkg=<module@version>` | 添加或升级依赖（使用项目本地 Go） |
 | `make lint` | 全项目运行 golangci-lint 并自动修复（本地开发） |
 | `make lint-check` | 全项目运行 golangci-lint，仅检查不修复（CI 使用） |
 
@@ -184,5 +202,8 @@ import (
 
 | 工具 | 版本管理 |
 |---|---|
-| `protoc` | `PROTOC_VERSION` 变量（当前 `33.4`） |
-| `protoc-gen-go` / `wire` / `golangci-lint` 等 | `@latest`（如需固化在 `go.mod` 中通过 `go get` 锁定） |
+| `go` | `GO_VERSION` 变量（当前 `1.26.0`），安装到 `.tools/go/` |
+| `protoc` | `PROTOC_VERSION` 变量（当前 `33.4`），安装到 `.tools/` |
+| `protoc-gen-go` / `wire` / `golangci-lint` 等 | `@latest`，安装到 `.go/bin/` |
+
+升级工具版本只需修改 `scripts/install_base.sh` 顶部的版本变量，再重新运行 `make install`。

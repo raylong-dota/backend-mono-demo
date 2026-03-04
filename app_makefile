@@ -10,7 +10,7 @@ ROOT_DIR  := $(shell cd ../../.. && pwd)
 GOBIN     := $(ROOT_DIR)/.go/bin
 TOOLS     := $(ROOT_DIR)/.tools
 # Inline PATH prefix — portable across GNU make and BSD make
-T         := PATH="$(GOBIN):$(TOOLS):$$PATH" GOMODCACHE="$(ROOT_DIR)/.go/pkg/mod"
+T         := PATH="$(GOBIN):$(TOOLS)/go/bin:$(TOOLS):$$PATH" GOMODCACHE="$(ROOT_DIR)/.go/pkg/mod"
 
 .PHONY: grpc
 # generate grpc code

@@ -1,22 +1,65 @@
 #!/usr/bin/env bash
 # Install project development tools (project-local, git-ignored)
+#   .tools/go/   — Go toolchain (GOROOT)
 #   .go/bin/     — Go tool binaries (GOBIN)
 #   .go/pkg/mod/ — Go module cache (GOMODCACHE)
 #   .tools/      — non-Go tool binaries (protoc, etc.)
 set -eo pipefail
 
 # ── Versions (update here when upgrading) ────────────────────────────────────
+GO_VERSION="1.26.0"
 PROTOC_VERSION="33.4"
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 GOBIN_DIR="$ROOT_DIR/.go/bin"
 TOOLS_DIR="$ROOT_DIR/.tools"
+GO_DIR="$TOOLS_DIR/go"
+GO="$GO_DIR/bin/go"
 
 mkdir -p "$GOBIN_DIR" "$TOOLS_DIR"
 
 echo "→ Installing tools"
 echo ""
+
+# ── Go toolchain → .tools/go/ ────────────────────────────────────────────────
+install_go() {
+    if [ -f "$GO" ]; then
+        local installed
+        installed=$("$GO" version | awk '{print $3}' | sed 's/go//')
+        if [ "$installed" = "$GO_VERSION" ]; then
+            echo "✓ go $GO_VERSION (already installed)"
+            return
+        fi
+        echo "  upgrading Go $installed → $GO_VERSION ..."
+        rm -rf "$GO_DIR"
+    fi
+
+    local os arch tarball
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    arch=$(uname -m)
+
+    case "$arch" in
+        arm64|aarch64) arch="arm64" ;;
+        x86_64)        arch="amd64" ;;
+        *) echo "✗ unsupported arch: $arch"; exit 1 ;;
+    esac
+
+    tarball="go${GO_VERSION}.${os}-${arch}.tar.gz"
+    local url="https://go.dev/dl/${tarball}"
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
+    trap 'rm -rf "$tmp_dir"' EXIT
+
+    echo -n "  installing go $GO_VERSION ... "
+    curl -fsSL "$url" -o "$tmp_dir/$tarball"
+    tar -C "$TOOLS_DIR" -xzf "$tmp_dir/$tarball"
+    trap - EXIT
+    rm -rf "$tmp_dir"
+    echo "✓"
+}
+
+install_go
 
 # ── protoc → .tools/ ─────────────────────────────────────────────────────────
 install_protoc() {
@@ -73,7 +116,7 @@ install_go_tool() {
     fi
 
     echo -n "  installing $bin ... "
-    GOBIN="$GOBIN_DIR" GOMODCACHE="$ROOT_DIR/.go/pkg/mod" go install "$pkg"
+    GOBIN="$GOBIN_DIR" GOMODCACHE="$ROOT_DIR/.go/pkg/mod" "$GO" install "$pkg"
     echo "✓"
 }
 
@@ -89,13 +132,14 @@ echo ""
 
 # ── Go module dependencies → .go/pkg/mod/ ────────────────────────────────────
 echo -n "  downloading go module dependencies ... "
-GOMODCACHE="$ROOT_DIR/.go/pkg/mod" go mod download
+GOMODCACHE="$ROOT_DIR/.go/pkg/mod" "$GO" mod download
 echo "✓"
 
 echo ""
 echo "✓ All done:"
+echo "  .tools/go/    → Go $GO_VERSION"
 echo "  .tools/       → protoc v${PROTOC_VERSION}"
 echo "  .go/bin/      → Go tool binaries"
 echo "  .go/pkg/mod/  → Go module source (browse with IDE)"
 echo ""
-echo "  Run 'make api', 'make wire', or 'make lint' in any service directory."
+echo "  Run 'make generate', 'make build', or 'make lint'."
