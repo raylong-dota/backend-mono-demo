@@ -1,8 +1,6 @@
 module github.com/ray-dota/backend-mono
 
-go 1.22
-
-toolchain go1.24.6
+go 1.26
 
 require (
 	github.com/go-kratos/kratos/v2 v2.9.2

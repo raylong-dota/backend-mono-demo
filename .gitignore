@@ -14,9 +14,8 @@
 # Dependency directories (remove the comment below to include it)
 vendor/
 
-# Go 
-.gocache
-.gomodcache
+# Go project-local module cache (GOMODCACHE=.go/pkg/mod)
+.go/
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
@@ -37,3 +36,6 @@ bin/
 .vscode/
 .idea/
 *.swp
+
+# Project-local tool binaries (installed via make install)
+.tools/

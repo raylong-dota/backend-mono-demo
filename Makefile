@@ -1,3 +1,15 @@
+export GOMODCACHE := $(shell pwd)/.go/pkg/mod
+
+.PHONY: install
+# install development tools to .tools/ (run once after cloning)
+install:
+	@bash scripts/install_base.sh
+
+.PHONY: new
+# create a new service: make new svcn=<name>  (e.g. make new svcn=order)
+new:
+	@bash scripts/new.sh $(svcn)
+
 .PHONY: api
 # generate api
 api:
