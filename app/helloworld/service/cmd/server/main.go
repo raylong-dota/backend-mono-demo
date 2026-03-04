@@ -4,8 +4,6 @@ import (
 	"flag"
 	"os"
 
-	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -13,8 +11,9 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-
 	_ "go.uber.org/automaxprocs"
+
+	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -63,7 +62,9 @@ func main() {
 			file.NewSource(flagconf),
 		),
 	)
-	defer c.Close()
+	defer func() {
+		_ = c.Close()
+	}()
 
 	if err := c.Load(); err != nil {
 		panic(err)
@@ -74,7 +75,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	app, cleanup, err := wireApp(bc.GetServer(), bc.GetData(), logger)
 	if err != nil {
 		panic(err)
 	}

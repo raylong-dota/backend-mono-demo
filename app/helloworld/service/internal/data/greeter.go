@@ -3,9 +3,9 @@ package data
 import (
 	"context"
 
-	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/biz"
-
 	"github.com/go-kratos/kratos/v2/log"
+
+	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/biz"
 )
 
 type greeterRepo struct {
@@ -29,8 +29,8 @@ func (r *greeterRepo) Update(ctx context.Context, g *biz.Greeter) (*biz.Greeter,
 	return g, nil
 }
 
-func (r *greeterRepo) FindByID(context.Context, int64) (*biz.Greeter, error) {
-	return nil, nil
+func (r *greeterRepo) FindByID(_ context.Context, _ int64) (*biz.Greeter, error) {
+	return nil, biz.ErrUserNotFound
 }
 
 func (r *greeterRepo) ListByHello(context.Context, string) ([]*biz.Greeter, error) {

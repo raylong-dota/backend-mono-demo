@@ -1,4 +1,6 @@
-export GOMODCACHE := $(shell pwd)/.go/pkg/mod
+GOBIN := $(shell pwd)/.go/bin
+TOOLS := $(shell pwd)/.tools
+T     := PATH="$(GOBIN):$(TOOLS):$$PATH" GOMODCACHE="$(shell pwd)/.go/pkg/mod"
 
 .PHONY: install
 # install development tools to .tools/ (run once after cloning)
@@ -9,6 +11,11 @@ install:
 # create a new service: make new svcn=<name>  (e.g. make new svcn=order)
 new:
 	@bash scripts/new.sh $(svcn)
+
+.PHONY: lint
+# run golangci-lint across the entire project
+lint:
+	$(T) golangci-lint run --timeout 10m --fix --path-mode abs --config configs/golangci.yaml ./...
 
 .PHONY: api
 # generate api

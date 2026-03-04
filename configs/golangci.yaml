@@ -1,0 +1,135 @@
+version: "2"
+
+run:
+  tests: false
+
+issues:
+  exclude-files:
+    - ".*_mock\\.go$"
+  exclude-rules:
+    # exclude gci formatter for generated code
+    - path: "^api/"
+      formatters:
+        - gci
+
+    # Exclude lll issues for long lines with struct tags
+    - linters:
+        - lll
+      source: "`(json|yaml|validate|db|swaggertype|swaggerignore):"
+
+linters:
+  default: none
+  enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - copyloopvar
+    - decorder
+    - dogsled
+    - dupl
+    - dupword
+    - durationcheck
+    - errcheck
+    - errchkjson
+    - exptostd
+    - funlen
+    - ginkgolinter
+    - gocheckcompilerdirectives
+    - gochecksumtype
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - goheader
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - gosmopolitan
+    - govet
+    - grouper
+    - iface
+    - importas
+    - ineffassign
+    - intrange
+    - lll
+    - loggercheck
+    - maintidx
+    - misspell
+    - mirror
+    - musttag
+    - nakedret
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - nolintlint
+    - nosprintfhostport
+    - paralleltest
+    - promlinter
+    - protogetter
+    - reassign
+    - recvcheck
+    - rowserrcheck
+    - sloglint
+    - spancheck
+    - sqlclosecheck
+    - staticcheck
+    - tagalign
+    - tagliatelle
+    - testableexamples
+    - testifylint
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+    - usetesting
+    - whitespace
+    - zerologlint
+  settings:
+    gocritic:
+      disabled-checks:
+        - ifElseChain
+        - singleCaseSwitch
+        - commentFormatting
+        - exitAfterDefer
+    gocyclo:
+      min-complexity: 25
+    gocognit:
+      min-complexity: 35
+    lll:
+      line-length: 120
+    misspell:
+      locale: US
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+    dupl:
+      threshold: 170
+    funlen:
+      lines: 130
+      statements: 70
+      ignore-comments: true
+    maintidx:
+      under: 15
+    gosmopolitan:
+      allow-time-local: true
+
+formatters:
+  enable:
+    - gci
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/ray-dota)
+      skip-generated: true
+      custom-order: true
+
+output:
+  print-resources-usage: true
