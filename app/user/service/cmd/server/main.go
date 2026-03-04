@@ -62,9 +62,7 @@ func main() {
 			file.NewSource(flagconf),
 		),
 	)
-	defer func() {
-		_ = c.Close()
-	}()
+	defer c.Close()
 
 	if err := c.Load(); err != nil {
 		panic(err)
