@@ -61,10 +61,14 @@ proto:
 generate:
 	$(T) go generate ./...
 
+# Output dir/name can be overridden by the root Makefile when building into bin/
+BINARY_DIR  ?= $(shell pwd)/bin
+BINARY_NAME ?= $(APP_NAME)
+
 .PHONY: build
 # build
 build:
-	mkdir -p bin/ && $(T) go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
+	mkdir -p $(BINARY_DIR) && $(T) go build -ldflags "-X main.Version=$(VERSION)" -o $(BINARY_DIR)/$(BINARY_NAME) ./cmd/server/
 
 .PHONY: test
 # test

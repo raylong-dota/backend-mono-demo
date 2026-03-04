@@ -31,11 +31,12 @@ type GreeterRepo interface {
 // GreeterUsecase is a Greeter usecase.
 type GreeterUsecase struct {
 	repo GreeterRepo
+	log  *log.Helper
 }
 
 // NewGreeterUsecase new a Greeter usecase.
-func NewGreeterUsecase(repo GreeterRepo) *GreeterUsecase {
-	return &GreeterUsecase{repo: repo}
+func NewGreeterUsecase(repo GreeterRepo, logger log.Logger) *GreeterUsecase {
+	return &GreeterUsecase{repo: repo, log: log.NewHelper(log.With(logger, "module", "greeter"))}
 }
 
 // CreateGreeter creates a Greeter, and returns the new Greeter.
