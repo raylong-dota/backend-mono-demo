@@ -29,11 +29,11 @@ generate:
 	@if [ -z "$(svc)" ]; then \
 		echo "error: svc is required, e.g. make generate svc=order  or  make generate svc=all"; exit 1; \
 	elif [ "$(svc)" = "all" ]; then \
-		find app -mindepth 2 -maxdepth 2 -type d -print | xargs -L 1 bash -c 'cd "$$0" && echo "→ $$0" && $(MAKE) api wire proto'; \
+		find app -mindepth 2 -maxdepth 2 -type d -print | xargs -L 1 bash -c 'cd "$$0" && echo "→ $$0" && $(MAKE) api proto wire'; \
 	elif [ ! -d "app/$(svc)/service" ]; then \
 		echo "error: app/$(svc)/service not found"; exit 1; \
 	else \
-		cd app/$(svc)/service && $(MAKE) api wire proto; \
+		cd app/$(svc)/service && $(MAKE) api proto wire; \
 	fi
 
 .PHONY: run
