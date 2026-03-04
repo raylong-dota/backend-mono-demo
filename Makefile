@@ -9,9 +9,9 @@ install:
 	@bash scripts/install_base.sh
 
 .PHONY: new
-# create a new service: make new svcn=<name>  (e.g. make new svcn=order)
+# create a new service: make new svc=<name>  (e.g. make new svc=order)
 new:
-	@bash scripts/new.sh $(svcn)
+	@bash scripts/new.sh $(svc)
 
 .PHONY: lint
 # run golangci-lint and auto-fix issues (local development)

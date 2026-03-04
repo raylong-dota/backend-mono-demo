@@ -73,7 +73,7 @@ make run svc=helloworld
 ### 3. 创建新服务
 
 ```bash
-make new svcn=order   # 生成 app/order/service 和 api/order/service
+make new svc=order   # 生成 app/order/service 和 api/order/service
 ```
 
 生成后的工作流：
@@ -104,7 +104,7 @@ make build svc=order   # → bin/orbit-order-svc
 | 命令 | 说明 |
 |---|---|
 | `make install` | 安装所有项目本地工具链（幂等，已装则跳过） |
-| `make new svcn=<name>` | 从 helloworld 模板创建新服务 |
+| `make new svc=<name>` | 从 helloworld 模板创建新服务 |
 | `make generate svc=<name>\|all` | 对指定服务或所有服务生成代码（api + wire + proto） |
 | `make build svc=<name>\|all` | 编译指定服务或所有服务，产物为 `bin/orbit-<svc>-svc` |
 | `make run svc=<name>` | 本地运行指定服务（`svc` 必填，不支持 `all`） |

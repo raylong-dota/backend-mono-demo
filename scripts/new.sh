@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Usage: make new svcn=<service-name>
-# Example: make new svcn=order
+# Usage: make new svc=<service-name>
+# Example: make new svc=order
 set -eo pipefail
 
 SVCN="${1}"
