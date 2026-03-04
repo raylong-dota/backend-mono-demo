@@ -35,6 +35,15 @@ backend-mono/
 │   ├── install_base.sh            # 一键安装项目本地工具链
 │   └── new.sh                     # 新服务脚手架
 │
+├── deploy/
+│   ├── build/
+│   │   └── Dockerfile             # 多阶段构建，接收 APP_SVC build arg
+│   └── k8s/
+│       └── <svc>/                 # 每个服务一个目录
+│           ├── configmap.yaml
+│           ├── deployment.yaml
+│           └── service.yaml
+│
 ├── third_party/                    # proto 依赖（google/api、validate 等）
 ├── app_makefile                   # 服务级 Makefile 模板
 ├── Makefile                       # 根级构建入口

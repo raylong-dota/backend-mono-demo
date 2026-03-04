@@ -24,6 +24,7 @@ image:
 		echo "error: app/$(svc)/service not found"; exit 1; \
 	else \
 		docker build \
+			-f deploy/build/Dockerfile \
 			--build-arg APP_SVC=$(svc) \
 			-t orbit-$(svc)-svc:$(if $(tag),$(tag),latest) \
 			.; \
