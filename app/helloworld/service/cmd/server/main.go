@@ -63,9 +63,7 @@ func main() {
 		),
 	)
 	defer func() {
-		if err := c.Close(); err != nil {
-			logger.Log(log.LevelError, "failed to close config", "error", err)
-		}
+		_ = c.Close()
 	}()
 
 	if err := c.Load(); err != nil {
