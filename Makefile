@@ -76,6 +76,20 @@ image:
 			.; \
 	fi
 
+.PHONY: deploy
+# deploy a service to local k8s: make deploy <svc>
+deploy:
+	@if ! command -v kubectl >/dev/null 2>&1; then \
+		echo "error: kubectl not found, please install kubectl first"; exit 1; \
+	elif [ -z "$(SVC)" ]; then \
+		echo "error: service name required, e.g. make deploy helloworld"; exit 1; \
+	elif [ ! -d "deploy/k8s/$(SVC)" ]; then \
+		echo "error: deploy/k8s/$(SVC) not found"; exit 1; \
+	else \
+		echo "→ deploying $(SVC) to $$(kubectl config current-context)"; \
+		kubectl apply -f deploy/k8s/$(SVC)/; \
+	fi
+
 .PHONY: lint
 # run golangci-lint and auto-fix issues (local development)
 lint:

@@ -132,6 +132,7 @@ make build order   # → bin/orbit-order-svc
 | `make generate <svc>\|all` | 对指定服务或所有服务生成代码（api + wire + proto） |
 | `make build <svc>\|all` | 编译指定服务或所有服务，产物为 `bin/orbit-<svc>-svc` |
 | `make run <svc>` | 本地运行指定服务（不支持 `all`） |
+| `make deploy <svc>` | 部署指定服务到本地 k8s 集群（`kubectl apply`） |
 | `make image <svc>` | 构建指定服务的 Docker 镜像，默认 tag `latest` |
 | `make image <svc> tag=<tag>` | 构建并指定镜像 tag |
 | `make clean` | 删除所有编译产物（根目录及各服务的 `bin/`） |
