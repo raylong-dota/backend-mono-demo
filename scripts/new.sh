@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Usage: make new svc=<service-name>
-# Example: make new svc=order
+# Usage: make new <service-name>
+# Example: make new order
 set -eo pipefail
 
 SVC="${1}"
@@ -8,8 +8,8 @@ SVC="${1}"
 # ── Validate ────────────────────────────────────────────────────────────────
 if [ -z "$SVC" ]; then
     echo "Error: service name required"
-    echo "Usage: make new svc=<service-name>"
-    echo "Example: make new svc=order"
+    echo "Usage: make new <service-name>"
+    echo "Example: make new order"
     exit 1
 fi
 

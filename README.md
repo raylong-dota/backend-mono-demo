@@ -87,7 +87,7 @@ direnv allow
 ### 2. 运行模板服务（helloworld）
 
 ```bash
-make run svc=helloworld
+make run helloworld
 ```
 
 服务默认监听：
@@ -97,7 +97,7 @@ make run svc=helloworld
 ### 3. 创建新服务
 
 ```bash
-make new svc=order   # 生成 app/order/service 和 api/order/service
+make new order   # 生成 app/order/service 和 api/order/service
 ```
 
 生成后的工作流：
@@ -107,7 +107,7 @@ make new svc=order   # 生成 app/order/service 和 api/order/service
 vim api/order/service/v1/order.proto
 
 # 2. 生成 gRPC / HTTP / Swagger + Wire 代码
-make generate svc=order
+make generate order
 
 # 3. 实现业务逻辑
 #    internal/biz/     — 定义 UseCase 和 Repo 接口
@@ -115,10 +115,10 @@ make generate svc=order
 #    internal/service/ — 实现 proto Server 接口，调用 biz
 
 # 4. 本地运行
-make run svc=order
+make run order
 
 # 5. 编译产物
-make build svc=order   # → bin/orbit-order-svc
+make build order   # → bin/orbit-order-svc
 ```
 
 ## Makefile 命令
@@ -128,19 +128,19 @@ make build svc=order   # → bin/orbit-order-svc
 | 命令 | 说明 |
 |---|---|
 | `make install` | 安装所有项目本地工具链（幂等，已装则跳过） |
-| `make new svc=<name>` | 从 helloworld 模板创建新服务 |
-| `make generate svc=<name>\|all` | 对指定服务或所有服务生成代码（api + wire + proto） |
-| `make build svc=<name>\|all` | 编译指定服务或所有服务，产物为 `bin/orbit-<svc>-svc` |
-| `make run svc=<name>` | 本地运行指定服务（`svc` 必填，不支持 `all`） |
-| `make image svc=<name>` | 构建指定服务的 Docker 镜像，默认 tag `latest` |
-| `make image svc=<name> tag=<tag>` | 构建并指定镜像 tag |
+| `make new <svc>` | 从 helloworld 模板创建新服务 |
+| `make generate <svc>\|all` | 对指定服务或所有服务生成代码（api + wire + proto） |
+| `make build <svc>\|all` | 编译指定服务或所有服务，产物为 `bin/orbit-<svc>-svc` |
+| `make run <svc>` | 本地运行指定服务（不支持 `all`） |
+| `make image <svc>` | 构建指定服务的 Docker 镜像，默认 tag `latest` |
+| `make image <svc> tag=<tag>` | 构建并指定镜像 tag |
 | `make clean` | 删除所有编译产物（根目录及各服务的 `bin/`） |
 | `make tidy` | 运行 `go mod tidy`（使用项目本地 Go） |
 | `make get pkg=<module@version>` | 添加或升级依赖（使用项目本地 Go） |
 | `make lint` | 全项目运行 golangci-lint 并自动修复（本地开发） |
 | `make lint-check` | 全项目运行 golangci-lint，仅检查不修复（CI 使用） |
 
-> 所有带 `svc` 的命令均为必填参数。
+> 服务名为位置参数，直接跟在命令后面，无需 `svc=` 前缀。
 
 ### 服务目录（`app/<app>/<service>/`）
 
