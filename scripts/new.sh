@@ -13,6 +13,11 @@ if [ -z "$SVC" ]; then
     exit 1
 fi
 
+if [ "$SVC" = "all" ]; then
+    echo "Error: 'all' is a reserved keyword and cannot be used as a service name"
+    exit 1
+fi
+
 if ! echo "$SVC" | grep -qE '^[a-z][a-z0-9]*$'; then
     echo "Error: service name must be lowercase letters and numbers only (e.g. order, quote, position)"
     exit 1
