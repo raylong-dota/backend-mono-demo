@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sayhello.service.v1;
+
+option go_package = "sayhello/service/v1;v1";
+
+
+enum ErrorReason {
+  SAYHELLO_UNSPECIFIED = 0;
+  USER_NOT_FOUND = 1;
+}

@@ -69,6 +69,10 @@ image:
 	elif [ ! -d "app/$(SVC)/service" ]; then \
 		echo "error: app/$(SVC)/service not found"; exit 1; \
 	else \
+		if [ ! -d vendor ]; then \
+			echo "→ vendor/ not found, running go mod vendor first ..."; \
+			$(T) go mod vendor; \
+		fi; \
 		docker build \
 			-f deploy/build/Dockerfile \
 			--build-arg APP_SVC=$(SVC) \
@@ -104,6 +108,11 @@ lint-check:
 # run go mod tidy with the project-local Go
 tidy:
 	$(T) go mod tidy
+
+.PHONY: vendor
+# vendor dependencies for offline / Docker builds
+vendor:
+	$(T) go mod vendor
 
 .PHONY: get
 # add or upgrade a dependency: make get pkg=github.com/foo/bar@v1.2.3

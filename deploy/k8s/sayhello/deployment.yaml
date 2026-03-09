@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: helloworld
+  name: sayhello
   namespace: default
   labels:
-    app: helloworld
+    app: sayhello
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: helloworld
+      app: sayhello
   template:
     metadata:
       labels:
-        app: helloworld
+        app: sayhello
     spec:
       containers:
-        - name: helloworld
-          image: orbit-helloworld-svc:latest
+        - name: sayhello
+          image: orbit-sayhello-svc:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -49,4 +49,4 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: helloworld-config
+            name: sayhello-config

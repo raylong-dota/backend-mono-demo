@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "helloworld/service/v1/error_reason.proto",
+    "title": "sayhello/service/v1/error_reason.proto",
     "version": "version not set"
   },
   "consumes": [

@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "helloworld/service/v1/greeter.proto",
+    "title": "sayhello/service/v1/sayhello.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "Greeter"
+      "name": "Sayhello"
     }
   ],
   "consumes": [
@@ -16,15 +16,15 @@
     "application/json"
   ],
   "paths": {
-    "/helloworld/{name}": {
+    "/hello/{name}": {
       "get": {
-        "summary": "Sends a greeting",
-        "operationId": "Greeter_SayHello",
+        "summary": "Proxies a greeting request to the helloworld service via gRPC",
+        "operationId": "Sayhello_HelloProxy",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1HelloReply"
+              "$ref": "#/definitions/v1HelloProxyReply"
             }
           },
           "default": {
@@ -43,7 +43,38 @@
           }
         ],
         "tags": [
-          "Greeter"
+          "Sayhello"
+        ]
+      }
+    },
+    "/sayhello/{name}": {
+      "get": {
+        "summary": "Sends a greeting",
+        "operationId": "Sayhello_SayHello",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SayhelloReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Sayhello"
         ]
       }
     }
@@ -77,7 +108,15 @@
         }
       }
     },
-    "v1HelloReply": {
+    "v1HelloProxyReply": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1SayhelloReply": {
       "type": "object",
       "properties": {
         "message": {

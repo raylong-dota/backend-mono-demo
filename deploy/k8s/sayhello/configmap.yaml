@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sayhello-config
+  namespace: default
+data:
+  config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8000
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9000
+        timeout: 1s
+    data:
+      helloworld:
+        addr: helloworld:9000

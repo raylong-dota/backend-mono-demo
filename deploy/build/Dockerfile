@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends make \
 WORKDIR /src
 COPY . .
 
-RUN make build svc=${APP_SVC}
+RUN make build ${APP_SVC}
 
 # ── Runtime ───────────────────────────────────────────────────────────────────
 FROM debian:stable-slim
