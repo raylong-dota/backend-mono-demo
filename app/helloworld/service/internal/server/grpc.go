@@ -1,13 +1,13 @@
 package server
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
-
 	v1 "github.com/ray-dota/backend-mono/api/helloworld/service/v1"
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/service"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
 )
 
 // NewGRPCServer new a gRPC server.

@@ -90,6 +90,19 @@ deploy:
 		kubectl apply -f deploy/k8s/$(SVC)/; \
 	fi
 
+.PHONY: test
+# run tests: make test <svc>|all
+test:
+	@if [ -z "$(SVC)" ]; then \
+		echo "error: service name required, e.g. make test helloworld  or  make test all"; exit 1; \
+	elif [ "$(SVC)" = "all" ]; then \
+		$(T) go test ./...; \
+	elif [ ! -d "app/$(SVC)/service" ]; then \
+		echo "error: app/$(SVC)/service not found"; exit 1; \
+	else \
+		cd app/$(SVC)/service && $(MAKE) test; \
+	fi
+
 .PHONY: lint
 # run golangci-lint and auto-fix issues (local development)
 lint:

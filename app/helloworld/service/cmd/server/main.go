@@ -4,6 +4,9 @@ import (
 	"flag"
 	"os"
 
+	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
+	"github.com/ray-dota/backend-mono/pkg/registry"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -12,8 +15,6 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	_ "go.uber.org/automaxprocs"
-
-	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -32,13 +33,14 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, reg *registry.Registry) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
 		kratos.Version(Version),
 		kratos.Metadata(map[string]string{}),
 		kratos.Logger(logger),
+		kratos.Registrar(reg),
 		kratos.Server(
 			gs,
 			hs,

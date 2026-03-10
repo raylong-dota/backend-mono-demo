@@ -3,9 +3,9 @@ package data
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
-
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/biz"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type greeterRepo struct {

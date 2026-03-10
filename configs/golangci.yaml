@@ -126,8 +126,8 @@ formatters:
     gci:
       sections:
         - standard
-        - default
         - prefix(github.com/ray-dota)
+        - default
       skip-generated: true
       custom-order: true
 

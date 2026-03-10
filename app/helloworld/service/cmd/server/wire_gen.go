@@ -14,6 +14,7 @@ import (
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/data"
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/server"
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/service"
+	"github.com/ray-dota/backend-mono/pkg/registry"
 )
 
 import (
@@ -33,7 +34,8 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	greeterService := service.NewGreeterService(greeterUsecase)
 	grpcServer := server.NewGRPCServer(confServer, greeterService, logger)
 	httpServer := server.NewHTTPServer(confServer, greeterService, logger)
-	app := newApp(logger, grpcServer, httpServer)
+	registryRegistry := registry.New()
+	app := newApp(logger, grpcServer, httpServer, registryRegistry)
 	return app, func() {
 		cleanup()
 	}, nil
