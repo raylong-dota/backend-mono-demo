@@ -5,13 +5,12 @@ import (
 	"os"
 
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
+	"github.com/ray-dota/backend-mono/pkg/log"
 	"github.com/ray-dota/backend-mono/pkg/registry"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	_ "go.uber.org/automaxprocs"
@@ -50,15 +49,7 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, reg *registry.R
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
+	logger := log.BuildLogger(Name, Version, log.LevelInfo)
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),

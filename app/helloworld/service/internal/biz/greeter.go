@@ -4,6 +4,7 @@ import (
 	"context"
 
 	v1 "github.com/ray-dota/backend-mono/api/helloworld/service/v1"
+	logPkg "github.com/ray-dota/backend-mono/pkg/log"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
@@ -31,12 +32,12 @@ type GreeterRepo interface {
 // GreeterUsecase is a Greeter usecase.
 type GreeterUsecase struct {
 	repo GreeterRepo
-	log  *log.Helper
+	log  logPkg.Helper
 }
 
 // NewGreeterUsecase new a Greeter usecase.
-func NewGreeterUsecase(repo GreeterRepo, logger log.Logger) *GreeterUsecase {
-	return &GreeterUsecase{repo: repo, log: log.NewHelper(log.With(logger, "module", "greeter"))}
+func NewGreeterUsecase(repo GreeterRepo, logger logPkg.Logger) *GreeterUsecase {
+	return &GreeterUsecase{repo: repo, log: logPkg.NewHelper(logger)}
 }
 
 // CreateGreeter creates a Greeter, and returns the new Greeter.
