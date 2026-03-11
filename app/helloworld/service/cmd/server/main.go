@@ -49,7 +49,6 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, reg *registry.R
 
 func main() {
 	flag.Parse()
-	logger := log.BuildLogger(Name, Version, log.LevelInfo)
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
@@ -67,6 +66,8 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
+
+	logger := log.BuildLogger(Name, Version, bc.GetLogger().GetLevel())
 
 	app, cleanup, err := wireApp(bc.GetServer(), bc.GetData(), logger)
 	if err != nil {

@@ -1,21 +1,23 @@
-package registry
+package registry_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/ray-dota/backend-mono/pkg/registry"
+
+	kratosregistry "github.com/go-kratos/kratos/v2/registry"
 )
 
 func TestNew(t *testing.T) {
-	r := New()
+	r := registry.New()
 	if r == nil {
 		t.Fatal("New() returned nil")
 	}
 }
 
 func TestEndpoint(t *testing.T) {
-	r := New()
+	r := registry.New()
 	cases := []string{
 		"order-svc:9000",
 		"user-svc:8080",
@@ -29,23 +31,23 @@ func TestEndpoint(t *testing.T) {
 }
 
 func TestRegister(t *testing.T) {
-	r := New()
-	err := r.Register(context.Background(), &registry.ServiceInstance{ID: "test"})
+	r := registry.New()
+	err := r.Register(context.Background(), &kratosregistry.ServiceInstance{ID: "test"})
 	if err != nil {
 		t.Errorf("Register() returned error: %v", err)
 	}
 }
 
 func TestDeregister(t *testing.T) {
-	r := New()
-	err := r.Deregister(context.Background(), &registry.ServiceInstance{ID: "test"})
+	r := registry.New()
+	err := r.Deregister(context.Background(), &kratosregistry.ServiceInstance{ID: "test"})
 	if err != nil {
 		t.Errorf("Deregister() returned error: %v", err)
 	}
 }
 
 func TestGetService(t *testing.T) {
-	r := New()
+	r := registry.New()
 	instances, err := r.GetService(context.Background(), "order-svc")
 	if err != nil {
 		t.Errorf("GetService() returned error: %v", err)
@@ -56,7 +58,7 @@ func TestGetService(t *testing.T) {
 }
 
 func TestWatch(t *testing.T) {
-	r := New()
+	r := registry.New()
 	w, err := r.Watch(context.Background(), "order-svc")
 	if err != nil {
 		t.Errorf("Watch() returned error: %v", err)

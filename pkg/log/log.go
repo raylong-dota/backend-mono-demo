@@ -2,10 +2,12 @@ package log
 
 import (
 	"context"
+	"os"
+	"strings"
 
-	"github.com/ray-dota/backend-mono/pkg/log/zap"
-
+	kzap "github.com/go-kratos/kratos/contrib/log/zap/v2"
 	klog "github.com/go-kratos/kratos/v2/log"
+	uzap "go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -13,16 +15,78 @@ import (
 // 基础设施层（server/data/biz）通过 wire 注入此类型；业务层使用 Helper。
 type Logger = klog.Logger
 
-// Level 日志级别，封装在 pkg/log，外部无需 import zap
-type Level int8
+type option func(*options)
+type options struct {
+	level zapcore.Level
+}
 
-const (
-	LevelDebug Level = iota - 1
-	LevelInfo
-	LevelWarn
-	LevelError
-	LevelFatal
-)
+func defaultOptions() *options {
+	return &options{
+		level: zapcore.InfoLevel,
+	}
+}
+
+// ParseLevel 将字符串解析为 zapcore.Level
+// 支持 debug / info / warn / error / fatal，未识别时返回 InfoLevel。
+func parseLevel(lv string) zapcore.Level {
+	switch strings.ToUpper(lv) {
+	case "DEBUG":
+		return zapcore.DebugLevel
+	case "WARN":
+		return zapcore.WarnLevel
+	case "ERROR":
+		return zapcore.ErrorLevel
+	case "FATAL":
+		return zapcore.FatalLevel
+	default:
+		return zapcore.InfoLevel
+	}
+}
+
+func withLevel(level zapcore.Level) option {
+	return func(o *options) {
+		o.level = level
+	}
+}
+
+// newZap 返回 klog.Logger，pkg/log 内部使用
+// 固定输出字段：ts / level / msg / caller
+func newZap(opts ...option) klog.Logger {
+	cfg := defaultOptions()
+	for _, o := range opts {
+		o(cfg)
+	}
+
+	encoderCfg := zapcore.EncoderConfig{
+		TimeKey:      "ts",
+		LevelKey:     "level",
+		MessageKey:   "msg",
+		CallerKey:    "caller",
+		EncodeTime:   zapcore.RFC3339NanoTimeEncoder,
+		EncodeLevel:  zapcore.LowercaseLevelEncoder,
+		EncodeCaller: zapcore.ShortCallerEncoder, // "biz/user.go:42"
+	}
+
+	core := zapcore.NewCore(
+		zapcore.NewJSONEncoder(encoderCfg),
+		zapcore.AddSync(os.Stdout), // K8s 体系只输出 stdout
+		cfg.level,
+	)
+
+	zapLogger := uzap.New(core, uzap.AddCaller(), uzap.AddCallerSkip(3))
+
+	return kzap.NewLogger(zapLogger)
+}
+
+// Build 组装生产级 Logger，注入服务元信息
+// 返回 Logger，框架层和 NewHelper 都可以使用
+func BuildLogger(service, version string, lv string) Logger {
+	return klog.With(
+		newZap(withLevel(parseLevel(lv))),
+		"service", service,
+		"version", version,
+	)
+}
 
 // Helper 业务层唯一依赖的接口
 type Helper interface {
@@ -49,10 +113,6 @@ type helper struct {
 	h *klog.Helper
 }
 
-func NewHelper(logger klog.Logger) Helper {
-	return &helper{h: klog.NewHelper(logger)}
-}
-
 func (h *helper) WithContext(ctx context.Context) Helper {
 	return &helper{h: h.h.WithContext(ctx)}
 }
@@ -72,31 +132,6 @@ func (h *helper) Infof(format string, args ...any)  { h.h.Infof(format, args...)
 func (h *helper) Warnf(format string, args ...any)  { h.h.Warnf(format, args...) }
 func (h *helper) Errorf(format string, args ...any) { h.h.Errorf(format, args...) }
 
-// Build 组装生产级 Logger，注入服务元信息
-// 返回 Logger，框架层和 NewHelper 都可以使用
-// log level 从环境变量 LOG_LEVEL 读取，默认 info
-func BuildLogger(service, version string, lv Level) Logger {
-	return klog.With(
-		zap.New(zap.WithLevel(toZapLevel(lv))),
-		"service", service,
-		"version", version,
-	)
-}
-
-// toZapLevel 将 pkg/log.Level 转换为 zapcore.Level，仅内部使用
-func toZapLevel(l Level) zapcore.Level {
-	switch l {
-	case LevelDebug:
-		return zapcore.DebugLevel
-	case LevelInfo:
-		return zapcore.InfoLevel
-	case LevelWarn:
-		return zapcore.WarnLevel
-	case LevelError:
-		return zapcore.ErrorLevel
-	case LevelFatal:
-		return zapcore.FatalLevel
-	default:
-		return zapcore.InfoLevel
-	}
+func NewHelper(logger klog.Logger) Helper {
+	return &helper{h: klog.NewHelper(logger)}
 }
