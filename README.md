@@ -161,6 +161,49 @@ make build order   # → bin/orbit-order-svc
 | `make ent` | 生成 ent ORM 代码 |
 | `make docker` | 构建 Docker 镜像 |
 
+## 配置与环境变量
+
+每个服务的配置文件位于 `app/<svc>/service/configs/config.yaml`，支持通过环境变量覆盖任意配置项。
+
+### 占位符语法
+
+配置文件中使用 `${KEY:default}` 语法，`KEY` 为去掉 `ORBIT_` 前缀后的环境变量名：
+
+```yaml
+logger:
+  level: ${LOGGER_LEVEL:info}   # ORBIT_LOGGER_LEVEL，默认 info
+```
+
+### 本地开发
+
+```bash
+export ORBIT_LOGGER_LEVEL=debug
+make run helloworld
+```
+
+### 测试环境 / CI
+
+在 CI 流水线或测试环境中通过环境变量直接注入：
+
+```bash
+ORBIT_LOGGER_LEVEL=info \
+  make test helloworld
+```
+
+### 生产部署（Kubernetes）
+
+敏感配置通过 Secret，非敏感配置通过 ConfigMap，统一以 `envFrom` 注入到 Pod：
+
+```yaml
+# deploy/k8s/<svc>/deployment.yaml
+envFrom:
+  - configMapRef:
+      name: orbit-<svc>-config   # ORBIT_LOGGER_LEVEL 等
+```
+如果接入 Vault（通过 vault-agent-injector），agent 会将 Secret 渲染为环境变量或文件，应用层无需感知来源。
+
+---
+
 ## CI / PR Gate
 
 向 `main` 分支发起 PR 时自动触发 `.github/workflows/pr-gate.yml`：

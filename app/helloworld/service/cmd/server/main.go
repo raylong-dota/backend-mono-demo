@@ -5,12 +5,11 @@ import (
 	"os"
 
 	"github.com/ray-dota/backend-mono/app/helloworld/service/internal/conf"
+	"github.com/ray-dota/backend-mono/pkg/config"
 	"github.com/ray-dota/backend-mono/pkg/log"
 	"github.com/ray-dota/backend-mono/pkg/registry"
 
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/config"
-	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	_ "go.uber.org/automaxprocs"
@@ -49,11 +48,7 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, reg *registry.R
 
 func main() {
 	flag.Parse()
-	c := config.New(
-		config.WithSource(
-			file.NewSource(flagconf),
-		),
-	)
+	c := config.New(flagconf)
 	defer func() {
 		_ = c.Close()
 	}()
