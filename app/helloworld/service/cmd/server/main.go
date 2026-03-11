@@ -28,7 +28,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+	flag.StringVar(&flagconf, "conf", "../../configs/config.yaml", "config file path, eg: -conf /etc/orbit/config.yaml")
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, reg *registry.Registry) *kratos.App {
