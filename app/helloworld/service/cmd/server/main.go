@@ -67,6 +67,11 @@ func main() {
 		panic(err)
 	}
 
+	// validate config value
+	if err := bc.Validate(); err != nil {
+		panic(err)
+	}
+
 	logger := log.BuildLogger(Name, Version, bc.GetLogger().GetLevel())
 
 	app, cleanup, err := wireApp(bc.GetServer(), bc.GetData(), logger)

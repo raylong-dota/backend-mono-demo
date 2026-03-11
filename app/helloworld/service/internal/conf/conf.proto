@@ -4,6 +4,7 @@ package kratos.api;
 option go_package = "helloworld/internal/conf;conf";
 
 import "google/protobuf/duration.proto";
+import "validate/validate.proto";
 
 message Bootstrap {
   Server server = 1;
@@ -42,5 +43,10 @@ message Data {
 }
 
 message Logger {
-  string level = 1;
+  string level = 1 [
+  (validate.rules).string = {
+    in: ["info","debug","error","fatal", "INFO", "DEBUG", "ERROR", "FATAL"]
+  }
+];
+
 }

@@ -12,4 +12,6 @@
 ## 自测清单
 
 - [ ] `make lint` 通过
+- [ ] `make test` 通过
+- [ ] self review
 - [ ] 本地运行验证

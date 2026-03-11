@@ -19,6 +19,7 @@ grpc:
            --proto_path=../../../third_party \
            --go_out=paths=source_relative:. \
            --go-grpc_out=paths=source_relative:. \
+           --validate_out=lang=go,paths=source_relative:. \
            $(API_PROTO_FILES)
 
 .PHONY: http
@@ -28,6 +29,7 @@ http:
            --proto_path=../../../third_party \
            --go_out=paths=source_relative:. \
            --go-http_out=paths=source_relative:. \
+           --validate_out=lang=go,paths=source_relative:. \
            $(API_PROTO_FILES)
 
 .PHONY: errors
@@ -54,6 +56,7 @@ proto:
 	$(T) protoc --proto_path=. \
            --proto_path=../../../third_party \
            --go_out=paths=source_relative:. \
+           --validate_out=lang=go,paths=source_relative:. \
            $(INTERNAL_PROTO_FILES)
 
 .PHONY: generate

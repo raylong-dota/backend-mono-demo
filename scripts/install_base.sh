@@ -120,6 +120,7 @@ install_go_tool() {
     echo "✓"
 }
 
+install_go_tool "github.com/envoyproxy/protoc-gen-validate@latest"                       "protoc-gen-validate"
 install_go_tool "google.golang.org/protobuf/cmd/protoc-gen-go@latest"                   "protoc-gen-go"
 install_go_tool "google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest"                  "protoc-gen-go-grpc"
 install_go_tool "github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest"          "protoc-gen-go-http"

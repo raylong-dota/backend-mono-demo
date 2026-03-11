@@ -15,6 +15,37 @@ import (
 // 基础设施层（server/data/biz）通过 wire 注入此类型；业务层使用 Helper。
 type Logger = klog.Logger
 
+// 如果 logger 还没初始化， 可以使用默认的全局 logger
+// stdout 输出，简单文本格式
+func Info(a ...any) {
+	klog.Info(a...)
+}
+func Warn(a ...any) {
+	klog.Warn(a...)
+}
+
+func Error(a ...any) {
+	klog.Error(a...)
+}
+
+func Fatal(a ...any) {
+	klog.Fatal(a...)
+}
+
+func Infof(format string, a ...any) {
+	klog.Infof(format, a...)
+}
+func Warnf(format string, a ...any) {
+	klog.Warnf(format, a...)
+}
+
+func Errorf(format string, a ...any) {
+	klog.Errorf(format, a...)
+}
+func Fatalf(format string, a ...any) {
+	klog.Fatalf(format, a...)
+}
+
 type option func(*options)
 type options struct {
 	level zapcore.Level
