@@ -2,6 +2,9 @@ VERSION=$(shell cat $(ROOT_DIR)/configs/VERSION 2>/dev/null || git describe --ta
 APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
 INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
+HTTP_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && grep -rl 'google.api.http' . --include='*.proto' 2>/dev/null)
+INTERNAL_VALIDATE_PROTO_FILES=$(shell grep -rl 'validate/validate.proto' internal --include='*.proto' 2>/dev/null)
+API_VALIDATE_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && grep -rl 'validate/validate.proto' . --include='*.proto' 2>/dev/null)
 APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
 DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "go-kratos/beer-" $$0 ":0.1.0"}')
 
@@ -19,8 +22,13 @@ grpc:
            --proto_path=../../../third_party \
            --go_out=paths=source_relative:. \
            --go-grpc_out=paths=source_relative:. \
-           --validate_out=lang=go,paths=source_relative:. \
            $(API_PROTO_FILES)
+	@if [ -n "$(API_VALIDATE_PROTO_FILES)" ]; then \
+		cd ../../../api/$(APP_RELATIVE_PATH) && $(T) protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --validate_out=lang=go,paths=source_relative:. \
+           $(API_VALIDATE_PROTO_FILES); \
+	fi
 
 .PHONY: http
 # generate http code
@@ -29,7 +37,6 @@ http:
            --proto_path=../../../third_party \
            --go_out=paths=source_relative:. \
            --go-http_out=paths=source_relative:. \
-           --validate_out=lang=go,paths=source_relative:. \
            $(API_PROTO_FILES)
 
 .PHONY: errors
@@ -44,20 +51,28 @@ errors:
 .PHONY: swagger
 # generate swagger
 swagger:
-	cd ../../../api/$(APP_RELATIVE_PATH) && $(T) protoc --proto_path=. \
+	@if [ -n "$(HTTP_PROTO_FILES)" ]; then \
+		cd ../../../api/$(APP_RELATIVE_PATH) && $(T) protoc --proto_path=. \
 	        --proto_path=../../../third_party \
 	        --openapiv2_out . \
 	        --openapiv2_opt logtostderr=true \
-           $(API_PROTO_FILES)
+           $(HTTP_PROTO_FILES); \
+	fi
 
 .PHONY: proto
 # generate internal proto struct
 proto:
+	@find internal -name '*.pb.go' -o -name '*.pb.validate.go' | xargs rm -f 2>/dev/null; true
 	$(T) protoc --proto_path=. \
            --proto_path=../../../third_party \
            --go_out=paths=source_relative:. \
-           --validate_out=lang=go,paths=source_relative:. \
            $(INTERNAL_PROTO_FILES)
+	@if [ -n "$(INTERNAL_VALIDATE_PROTO_FILES)" ]; then \
+		$(T) protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --validate_out=lang=go,paths=source_relative:. \
+           $(INTERNAL_VALIDATE_PROTO_FILES); \
+	fi
 
 .PHONY: generate
 # generate client code
@@ -93,11 +108,15 @@ docker:
 .PHONY: wire
 # generate wire
 wire:
+	rm -f cmd/server/wire_gen.go
 	cd cmd/server && $(T) wire
 
 .PHONY: api
 # generate api proto
-api: grpc http swagger errors
+api:
+	@cd ../../../api/$(APP_RELATIVE_PATH) && \
+		find . \( -name '*.pb.go' -o -name '*.pb.validate.go' -o -name '*.swagger.json' \) -delete 2>/dev/null; true
+	$(MAKE) grpc http swagger errors
 
 .PHONY: all
 # generate all

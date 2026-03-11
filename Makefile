@@ -113,6 +113,11 @@ lint:
 lint-check:
 	$(T) golangci-lint run --timeout 10m --path-mode abs --config configs/golangci.yaml ./...
 
+.PHONY: openapi
+# serve Swagger UI for all services: make openapi [port=9090] [svc=localhost:8000]
+openapi:
+	$(T) go run ./openapi/ -addr :$(if $(port),$(port),8080) -svc $(if $(svc),$(svc),localhost:8000)
+
 .PHONY: tidy
 # run go mod tidy with the project-local Go
 tidy:
