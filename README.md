@@ -140,8 +140,30 @@ make build order   # → bin/orbit-order-svc
 | `make get pkg=<module@version>` | 添加或升级依赖（使用项目本地 Go） |
 | `make lint` | 全项目运行 golangci-lint 并自动修复（本地开发） |
 | `make lint-check` | 全项目运行 golangci-lint，仅检查不修复（CI 使用） |
+| `make openapi` | 启动 Swagger UI（`:8080`），代理到 `localhost:8000` |
+| `make openapi port=9090 svc=localhost:9001` | 自定义端口和目标服务地址 |
 
 > 服务名为位置参数，直接跟在命令后面，无需 `svc=` 前缀。
+
+## OpenAPI / Swagger UI
+
+```bash
+# 先运行服务
+make run helloworld
+
+# 另开终端，启动 Swagger UI（默认 :8080，代理到 :8000）
+make openapi
+
+# 自定义端口或目标服务
+make openapi port=9090 svc=localhost:8000
+```
+
+浏览器打开 `http://localhost:8080` 即可看到 Swagger UI，左上角下拉可切换多个服务的 API 定义。
+
+- `GET /` — Swagger UI 界面
+- `GET /files` — 返回所有 `api/**/*.swagger.json` 的 JSON 列表
+- `GET /api/**` — 直接提供 swagger JSON 文件
+- 其他路径 — 反向代理到目标服务，支持 **Try it out** 无跨域问题
 
 ### 服务目录（`app/<app>/<service>/`）
 

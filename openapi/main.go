@@ -1,5 +1,6 @@
 // openapi serves a Swagger UI and reverse-proxies API requests to the service.
 // All browser requests go to :8080 (same origin), proxy forwards to the real service.
+// GET / → swagger-ui; all other paths proxy to the real service.
 //
 // Usage:
 //
@@ -60,16 +61,17 @@ func main() {
 	// /api/** → swagger JSON files as-is (no host injection; swagger-ui uses current host)
 	mux.Handle("/api/", http.StripPrefix("/api/", http.FileServer(http.Dir(*apiDir))))
 
-	// /ui → swagger-ui HTML
-	mux.HandleFunc("/ui", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprint(w, swaggerUIHTML)
+	// / → swagger-ui HTML for exact root; everything else → reverse proxy
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			fmt.Fprint(w, swaggerUIHTML)
+			return
+		}
+		proxy.ServeHTTP(w, r)
 	})
 
-	// everything else → reverse proxy to real service
-	mux.Handle("/", proxy)
-
-	fmt.Printf("OpenAPI UI  → http://%s/ui\n", *addr)
+	fmt.Printf("OpenAPI UI  → http://%s\n", *addr)
 	fmt.Printf("Service     → http://%s\n", *svc)
 	if err := http.ListenAndServe(*addr, mux); err != nil {
 		fmt.Fprintln(os.Stderr, err)
