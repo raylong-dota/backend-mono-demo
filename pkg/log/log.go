@@ -111,11 +111,13 @@ func newZap(opts ...option) klog.Logger {
 
 // Build 组装生产级 Logger，注入服务元信息
 // 返回 Logger，框架层和 NewHelper 都可以使用
-func BuildLogger(service, version string, lv string) Logger {
+func BuildLogger(hostname, service, version string, lv string) Logger {
 	return klog.With(
 		newZap(withLevel(parseLevel(lv))),
-		"service", service,
-		"version", version,
+		// 字段名来自约定 https://opentelemetry.io/docs/specs/semconv/resource/service/
+		"service.instance.id", hostname,
+		"service.name", service,
+		"service.version", version,
 	)
 }
 

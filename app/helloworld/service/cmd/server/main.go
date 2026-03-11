@@ -19,7 +19,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string
+	Name = "helloworld"
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
@@ -72,7 +72,7 @@ func main() {
 		panic(err)
 	}
 
-	logger := log.BuildLogger(Name, Version, bc.GetLogger().GetLevel())
+	logger := log.BuildLogger(id, Name, Version, bc.GetLogger().GetLevel())
 
 	app, cleanup, err := wireApp(bc.GetServer(), bc.GetData(), logger)
 	if err != nil {

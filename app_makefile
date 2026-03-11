@@ -1,4 +1,4 @@
-VERSION=$(shell git describe --tags --always)
+VERSION=$(shell cat $(ROOT_DIR)/configs/VERSION 2>/dev/null || git describe --tags --always)
 APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
 INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
@@ -80,7 +80,7 @@ test:
 
 .PHONY: run
 run:
-	cd cmd/server/ && $(T) go run .
+	$(T) go build -ldflags "-X main.Version=$(VERSION)" -o /tmp/$(APP_NAME) ./cmd/server/ && cd cmd/server/ && /tmp/$(APP_NAME)
 
 .PHONY: ent
 ent:
