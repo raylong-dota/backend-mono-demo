@@ -180,7 +180,6 @@ make openapi port=9090 svc=localhost:8000
 | `make build` | 编译二进制（默认产物在服务本地 `bin/<APP_NAME>`） |
 | `make run` | 本地运行服务 |
 | `make test` | 运行单元测试 |
-| `make ent` | 生成 ent ORM 代码 |
 | `make docker` | 构建 Docker 镜像 |
 
 ## 配置与环境变量

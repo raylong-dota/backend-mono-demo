@@ -97,10 +97,6 @@ test:
 run:
 	$(T) go build -ldflags "-X main.Version=$(VERSION)" -o /tmp/$(APP_NAME) ./cmd/server/ && cd cmd/server/ && /tmp/$(APP_NAME)
 
-.PHONY: ent
-ent:
-	cd internal/data/ && $(T) ent generate ./ent/schema
-
 .PHONY: docker
 docker:
 	cd ../../.. && docker build -f deploy/build/Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
