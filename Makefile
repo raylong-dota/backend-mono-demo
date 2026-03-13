@@ -103,15 +103,28 @@ test:
 		cd app/$(SVC)/service && $(MAKE) test; \
 	fi
 
-.PHONY: lint
+.PHONY: golang-lint
 # run golangci-lint and auto-fix issues (local development)
-lint:
+golang-lint:
 	$(T) golangci-lint run --timeout 10m --fix --path-mode abs --config configs/golangci.yaml ./...
 
-.PHONY: lint-check
+.PHONY: golang-lint-check
 # run golangci-lint in check-only mode, no auto-fix (used by CI)
-lint-check:
+golang-lint-check:
 	$(T) golangci-lint run --timeout 10m --path-mode abs --config configs/golangci.yaml ./...
+
+.PHONY: buf-lint
+# run buf lint on api/ protobuf files
+buf-lint:
+	$(T) buf lint api/
+
+.PHONY: lint
+# run all linters: golangci-lint (with auto-fix) + buf lint
+lint: golang-lint buf-lint
+
+.PHONY: lint-check
+# run all linters in check-only mode (used by CI)
+lint-check: golang-lint-check buf-lint
 
 .PHONY: openapi
 # serve Swagger UI for all services: make openapi [port=9090] [svc=localhost:8000]

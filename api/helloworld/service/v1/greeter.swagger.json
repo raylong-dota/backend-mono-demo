@@ -19,12 +19,12 @@
     "/helloworld/{name}": {
       "get": {
         "summary": "Sends a greeting",
-        "operationId": "Greeter_SayHello",
+        "operationId": "Greeter_Hello",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1HelloReply"
+              "$ref": "#/definitions/v1HelloResponse"
             }
           },
           "default": {
@@ -77,7 +77,7 @@
         }
       }
     },
-    "v1HelloReply": {
+    "v1HelloResponse": {
       "type": "object",
       "properties": {
         "message": {

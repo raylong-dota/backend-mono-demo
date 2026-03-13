@@ -66,7 +66,7 @@ backend-mono/
 git clone <repo-url>
 cd backend-mono
 
-make install   # 安装 Go 1.26.0、protoc、wire、golangci-lint 等（幂等，已装则跳过）
+make install   # 安装 Go 1.26.0、protoc、buf、wire、golangci-lint 等（幂等，已装则跳过）
 ```
 
 **推荐安装 [direnv](https://direnv.net/)，然后执行：**
@@ -138,8 +138,11 @@ make build order   # → bin/orbit-order-svc
 | `make clean` | 删除所有编译产物（根目录及各服务的 `bin/`） |
 | `make tidy` | 运行 `go mod tidy`（使用项目本地 Go） |
 | `make get pkg=<module@version>` | 添加或升级依赖（使用项目本地 Go） |
-| `make lint` | 全项目运行 golangci-lint 并自动修复（本地开发） |
-| `make lint-check` | 全项目运行 golangci-lint，仅检查不修复（CI 使用） |
+| `make lint` | 运行全部 lint（golangci-lint 自动修复 + buf lint protobuf）（本地开发） |
+| `make lint-check` | 运行全部 lint，仅检查不修复（CI 使用） |
+| `make golang-lint` | 仅运行 golangci-lint 并自动修复 |
+| `make golang-lint-check` | 仅运行 golangci-lint，不修复 |
+| `make buf-lint` | 仅运行 buf lint 检查 `api/` 下的 protobuf 文件, style 见 https://protobuf.dev/programming-guides/style/ |
 | `make openapi` | 启动 Swagger UI（`:8080`），代理到 `localhost:8000` |
 | `make openapi port=9090 svc=localhost:9001` | 自定义端口和目标服务地址 |
 
@@ -280,6 +283,7 @@ import (
 |---|---|
 | `go` | `GO_VERSION` 变量（当前 `1.26.0`），安装到 `.tools/go/` |
 | `protoc` | `PROTOC_VERSION` 变量（当前 `33.4`），安装到 `.tools/` |
+| `buf` | `BUF_VERSION` 变量（当前 `1.66.1`），安装到 `.tools/` |
 | `protoc-gen-go` / `wire` / `golangci-lint` 等 | `@latest`，安装到 `.go/bin/` |
 
 升级工具版本只需修改 `scripts/install_base.sh` 顶部的版本变量，再重新运行 `make install`。

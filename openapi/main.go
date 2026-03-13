@@ -22,9 +22,9 @@ import (
 )
 
 func main() {
-	addr   := flag.String("addr", ":8080", "UI listen address")
+	addr := flag.String("addr", ":8080", "UI listen address")
 	apiDir := flag.String("api", "api", "root directory containing *.swagger.json files")
-	svc    := flag.String("svc", "localhost:8000", "actual service HTTP address")
+	svc := flag.String("svc", "localhost:8000", "actual service HTTP address")
 	flag.Parse()
 
 	svcURL, err := url.Parse("http://" + *svc)
@@ -65,7 +65,7 @@ func main() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			fmt.Fprint(w, swaggerUIHTML)
+			_, _ = fmt.Fprint(w, swaggerUIHTML)
 			return
 		}
 		proxy.ServeHTTP(w, r)

@@ -9,6 +9,7 @@ set -eo pipefail
 # ── Versions (update here when upgrading) ────────────────────────────────────
 GO_VERSION="1.26.0"
 PROTOC_VERSION="33.4"
+BUF_VERSION="1.66.1"
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -129,6 +130,35 @@ install_go_tool "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@
 install_go_tool "github.com/google/wire/cmd/wire@latest"                                "wire"
 install_go_tool "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"         "golangci-lint"
 
+# ── buf → .tools/ ────────────────────────────────────────────────────────────
+install_buf() {
+    if [ -f "$TOOLS_DIR/buf" ]; then
+        echo "✓ buf (already installed)"
+        return
+    fi
+
+    local os arch
+    os=$(uname -s)
+    arch=$(uname -m)
+
+    # buf release naming: Darwin uses arm64, Linux uses aarch64
+    case "$os-$arch" in
+        Darwin-arm64)          arch="arm64" ;;
+        Darwin-x86_64)         arch="x86_64" ;;
+        Linux-aarch64|Linux-arm64) arch="aarch64" ;;
+        Linux-x86_64)          arch="x86_64" ;;
+        *) echo "✗ unsupported platform: $os-$arch"; exit 1 ;;
+    esac
+
+    local url="https://github.com/bufbuild/buf/releases/download/v${BUF_VERSION}/buf-${os}-${arch}"
+    echo -n "  installing buf v${BUF_VERSION} ... "
+    curl -fsSL "$url" -o "$TOOLS_DIR/buf"
+    chmod +x "$TOOLS_DIR/buf"
+    echo "✓"
+}
+
+install_buf
+
 echo ""
 
 # ── Go module dependencies → .go/pkg/mod/ ────────────────────────────────────
@@ -139,7 +169,7 @@ echo "✓"
 echo ""
 echo "✓ All done:"
 echo "  .tools/go/    → Go $GO_VERSION"
-echo "  .tools/       → protoc v${PROTOC_VERSION}"
+echo "  .tools/       → protoc v${PROTOC_VERSION}, buf v${BUF_VERSION}"
 echo "  .go/bin/      → Go tool binaries"
 echo "  .go/pkg/mod/  → Go module source (browse with IDE)"
 echo ""
