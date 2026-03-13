@@ -139,10 +139,11 @@ make build order   # → bin/orbit-order-svc
 | `make tidy` | 运行 `go mod tidy`（使用项目本地 Go） |
 | `make get pkg=<module@version>` | 添加或升级依赖（使用项目本地 Go） |
 | `make lint` | 运行全部 lint（golangci-lint 自动修复 + buf lint protobuf）（本地开发） |
-| `make lint-check` | 运行全部 lint，仅检查不修复（CI 使用） |
+| `make lint-check` | 运行全部 lint，仅检查不修复，含 breaking change 检测（CI 使用） |
 | `make golang-lint` | 仅运行 golangci-lint 并自动修复 |
 | `make golang-lint-check` | 仅运行 golangci-lint，不修复 |
 | `make buf-lint` | 仅运行 buf lint 检查 `api/` 下的 protobuf 文件, style 见 https://protobuf.dev/programming-guides/style/ |
+| `make buf-breaking-check` | 检查 `api/` protobuf 是否对 main 分支存在 breaking change |
 | `make openapi` | 启动 Swagger UI（`:8080`），代理到 `localhost:8000` |
 | `make openapi port=9090 svc=localhost:9001` | 自定义端口和目标服务地址 |
 

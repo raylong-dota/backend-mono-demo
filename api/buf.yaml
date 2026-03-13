@@ -5,6 +5,9 @@ lint:
   except:
     # 适配 Kratos 风格
     - PACKAGE_VERSION_SUFFIX
-    - PACKAGE_DIRECTORY_MATCH 
+    - PACKAGE_DIRECTORY_MATCH
     - ENUM_VALUE_PREFIX
     - SERVICE_SUFFIX
+breaking:
+  use:
+    - FILE

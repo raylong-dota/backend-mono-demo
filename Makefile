@@ -118,13 +118,18 @@ golang-lint-check:
 buf-lint:
 	$(T) buf lint api/
 
+.PHONY: buf-breaking-check
+# check api/ protobuf files for breaking changes against main branch
+buf-breaking-check:
+	$(T) buf breaking api/ --against '.git#branch=main,subdir=api'
+
 .PHONY: lint
 # run all linters: golangci-lint (with auto-fix) + buf lint
 lint: golang-lint buf-lint
 
 .PHONY: lint-check
 # run all linters in check-only mode (used by CI)
-lint-check: golang-lint-check buf-lint
+lint-check: golang-lint-check buf-lint buf-breaking-check
 
 .PHONY: openapi
 # serve Swagger UI for all services: make openapi [port=9090] [svc=localhost:8000]
