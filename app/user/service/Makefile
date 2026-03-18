@@ -1,0 +1,120 @@
+VERSION=$(shell git describe --tags --always)
+APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
+INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
+API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
+APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
+DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "go-kratos/beer-" $$0 ":0.1.0"}')
+
+# Project-local directories (installed via make install at repo root)
+ROOT_DIR  := $(shell cd ../../.. && pwd)
+GOBIN     := $(ROOT_DIR)/.go/bin
+TOOLS     := $(ROOT_DIR)/.tools
+# Inline PATH prefix — portable across GNU make and BSD make
+T         := PATH="$(GOBIN):$(TOOLS):$$PATH" GOMODCACHE="$(ROOT_DIR)/.go/pkg/mod"
+
+.PHONY: grpc
+# generate grpc code
+grpc:
+	cd ../../../api/$(APP_RELATIVE_PATH) && $(T) protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           --go-grpc_out=paths=source_relative:. \
+           $(API_PROTO_FILES)
+
+.PHONY: http
+# generate http code
+http:
+	cd ../../../api/$(APP_RELATIVE_PATH) && $(T) protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           --go-http_out=paths=source_relative:. \
+           $(API_PROTO_FILES)
+
+.PHONY: errors
+# generate errors code
+errors:
+	cd ../../../api/$(APP_RELATIVE_PATH) && $(T) protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           --go-errors_out=paths=source_relative:. \
+           $(API_PROTO_FILES)
+
+.PHONY: swagger
+# generate swagger
+swagger:
+	cd ../../../api/$(APP_RELATIVE_PATH) && $(T) protoc --proto_path=. \
+	        --proto_path=../../../third_party \
+	        --openapiv2_out . \
+	        --openapiv2_opt logtostderr=true \
+           $(API_PROTO_FILES)
+
+.PHONY: proto
+# generate internal proto struct
+proto:
+	$(T) protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           $(INTERNAL_PROTO_FILES)
+
+.PHONY: generate
+# generate client code
+generate:
+	$(T) go generate ./...
+
+# Output dir/name can be overridden by the root Makefile when building into bin/
+BINARY_DIR  ?= $(shell pwd)/bin
+BINARY_NAME ?= $(APP_NAME)
+
+.PHONY: build
+# build
+build:
+	mkdir -p $(BINARY_DIR) && $(T) go build -ldflags "-X main.Version=$(VERSION)" -o $(BINARY_DIR)/$(BINARY_NAME) ./cmd/server/
+
+.PHONY: test
+# test
+test:
+	$(T) go test -v ./... -cover
+
+.PHONY: run
+run:
+	cd cmd/server/ && $(T) go run .
+
+.PHONY: ent
+ent:
+	cd internal/data/ && $(T) ent generate ./ent/schema
+
+.PHONY: docker
+docker:
+	cd ../../.. && docker build -f deploy/build/Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
+
+.PHONY: wire
+# generate wire
+wire:
+	cd cmd/server && $(T) wire
+
+.PHONY: api
+# generate api proto
+api: grpc http swagger errors
+
+.PHONY: all
+# generate all
+all: grpc http proto generate build test
+
+# show help
+help:
+	@echo ''
+	@echo 'Usage:'
+	@echo ' make [target]'
+	@echo ''
+	@echo 'Targets:'
+	@awk '/^[a-zA-Z\-\_0-9]+:/ { \
+	helpMessage = match(lastLine, /^# (.*)/); \
+		if (helpMessage) { \
+			helpCommand = substr($$1, 0, index($$1, ":")-1); \
+			helpMessage = substr(lastLine, RSTART + 2, RLENGTH); \
+			printf "\033[36m%-22s\033[0m %s\n", helpCommand,helpMessage; \
+		} \
+	} \
+	{ lastLine = $$0 }' $(MAKEFILE_LIST)
+
+.DEFAULT_GOAL := help
